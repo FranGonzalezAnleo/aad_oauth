@@ -11,8 +11,10 @@ import 'package:dartz/dartz.dart';
 class CoreOAuth {
   CoreOAuth();
 
-  Future<Either<Failure, Token>> login(
-          {bool refreshIfAvailable = false}) async =>
+  Future<Either<Failure, Token>> login({
+    bool refreshIfAvailable = false,
+    bool forceFullAuthFlow = false,
+  }) async =>
       throw UnsupportedFailure(ErrorType.Unsupported, 'Unsupported login');
 
   Future<void> logout() async =>
@@ -36,8 +38,10 @@ class MockCoreOAuth extends CoreOAuth {
   final String mockIdToken = 'ID_TOKEN';
 
   @override
-  Future<Either<Failure, Token>> login(
-          {bool refreshIfAvailable = false}) async =>
+  Future<Either<Failure, Token>> login({
+    bool refreshIfAvailable = false,
+    bool forceFullAuthFlow = false,
+  }) async =>
       Right(Token(accessToken: mockAccessToken));
 
   @override

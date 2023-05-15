@@ -27,7 +27,9 @@ class AadOAuth {
   /// Setting [forceFullAuthFlow] to `true` will attempt to full authentication flow.
   Future<Either<Failure, Token>> login(
           {bool refreshIfAvailable = false, bool forceFullAuthFlow = false}) =>
-      _coreOAuth.login(refreshIfAvailable: refreshIfAvailable);
+      _coreOAuth.login(
+          refreshIfAvailable: refreshIfAvailable,
+          forceFullAuthFlow: forceFullAuthFlow);
 
   /// Retrieve cached OAuth Access Token.
   Future<String?> getAccessToken() async => _coreOAuth.getAccessToken();
