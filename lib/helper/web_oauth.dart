@@ -1,6 +1,6 @@
 /// Microsoft identity platform authentication library.
 /// @nodoc
-@JS('aadOauth')
+@JS('window.aadOauth')
 library msauth;
 
 import 'dart:async';
