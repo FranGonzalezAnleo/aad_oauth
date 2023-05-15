@@ -97,7 +97,7 @@ window.aadOauth = (function () {
   /// if it has nearly expired. If this fails for any reason, it will then move on
   /// to attempt to refresh the token using an interactive login.
 
-  async function login(refreshIfAvailable, useRedirect, onSuccess, onError) {
+  async function login(refreshIfAvailable, forceFullAuthFlow, useRedirect, onSuccess, onError) {
     try {
       // The redirect handler task will complete with auth results if we
       // were redirected from AAD. If not, it will complete with null
@@ -115,14 +115,16 @@ window.aadOauth = (function () {
       return;
     }
 
-    // Try to sign in silently, assuming we have already signed in and have
-    // a cached access token
-    await silentlyAcquireToken()
+    if (!forceFullAuthFlow) {
+      // Try to sign in silently, assuming we have already signed in and have
+      // a cached access token
+      await silentlyAcquireToken()
 
-    if (authResult != null) {
-      // Skip interactive login
-      onSuccess(authResult.accessToken ?? null);
-      return
+      if (authResult != null) {
+        // Skip interactive login
+        onSuccess(authResult.accessToken ?? null);
+        return
+      }
     }
 
     const account = getAccount()

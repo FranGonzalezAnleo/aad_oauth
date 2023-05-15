@@ -21,6 +21,7 @@ external void jsInit(MsalConfig config);
 @JS('login')
 external void jsLogin(
   bool refreshIfAvailable,
+  bool forceFullAuthFlow,
   bool useRedirect,
   void Function(dynamic) onSuccess,
   void Function(dynamic) onError,
@@ -87,11 +88,12 @@ class WebOAuth extends CoreOAuth {
 
   @override
   Future<Either<Failure, Token>> login(
-      {bool refreshIfAvailable = false}) async {
+      {bool refreshIfAvailable = false, bool forceFullAuthFlow = false}) async {
     final completer = Completer<Either<Failure, Token>>();
 
     jsLogin(
       refreshIfAvailable,
+      forceFullAuthFlow,
       config.webUseRedirect,
       allowInterop(
           (_value) => completer.complete(Right(Token(accessToken: _value)))),

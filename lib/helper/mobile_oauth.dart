@@ -33,9 +33,11 @@ class MobileOAuth extends CoreOAuth {
   /// both access and refresh tokens are invalid, the web gui will be used.
   @override
   Future<Either<Failure, Token>> login(
-      {bool refreshIfAvailable = false}) async {
+      {bool refreshIfAvailable = false, bool forceFullAuthFlow = false}) async {
     await _removeOldTokenOnFirstLogin();
-    return await _authorization(refreshIfAvailable: refreshIfAvailable);
+    return await _authorization(
+        refreshIfAvailable: refreshIfAvailable,
+        forceFullAuthFlow: forceFullAuthFlow);
   }
 
   /// Retrieve cached OAuth Access Token.
@@ -67,16 +69,16 @@ class MobileOAuth extends CoreOAuth {
   /// will be returned, as long as we deem it still valid. In the event that
   /// both access and refresh tokens are invalid, the web gui will be used.
   Future<Either<Failure, Token>> _authorization(
-      {bool refreshIfAvailable = false}) async {
+      {bool refreshIfAvailable = false, bool forceFullAuthFlow = false}) async {
     var token = await _authStorage.loadTokenFromCache();
 
-    if (!refreshIfAvailable) {
+    if (!refreshIfAvailable && !forceFullAuthFlow) {
       if (token.hasValidAccessToken()) {
         return Right(token);
       }
     }
 
-    if (token.hasRefreshToken()) {
+    if (token.hasRefreshToken() && !forceFullAuthFlow) {
       final result =
           await _requestToken.requestRefreshToken(token.refreshToken!);
       //If refresh token request throws an exception, we have to do
@@ -87,7 +89,7 @@ class MobileOAuth extends CoreOAuth {
       );
     }
 
-    if (!token.hasValidAccessToken()) {
+    if (!token.hasValidAccessToken() || forceFullAuthFlow) {
       final result = await _performFullAuthFlow();
       var failure;
       result.fold(
